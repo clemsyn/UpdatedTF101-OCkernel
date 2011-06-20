@@ -1,1 +1,0 @@
-cmd_drivers/net/wireless/bcm4329/bcm4329.ko := arm-linux-androideabi-ld -EL -r  -T /media/NEW/UpdatedTF101-OCkernel/scripts/module-common.lds --build-id  -o drivers/net/wireless/bcm4329/bcm4329.ko drivers/net/wireless/bcm4329/bcm4329.o drivers/net/wireless/bcm4329/bcm4329.mod.o

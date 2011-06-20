@@ -1,3 +1,0 @@
-kernel/drivers/ril/ril.ko
-kernel/drivers/ril/proximity.ko
-kernel/drivers/ril/sim.ko

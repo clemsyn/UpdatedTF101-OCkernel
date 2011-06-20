@@ -1,1 +1,0 @@
-cmd_drivers/input/touchscreen/built-in.o :=  arm-linux-androideabi-ld -EL    -r -o drivers/input/touchscreen/built-in.o drivers/input/touchscreen/atmel_maxtouch.o drivers/input/touchscreen/atmel_maxtouch_ep102.o drivers/input/touchscreen/cyttsp_i2c.o drivers/input/touchscreen/cyttsp_core.o 

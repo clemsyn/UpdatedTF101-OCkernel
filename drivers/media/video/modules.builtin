@@ -1,9 +1,0 @@
-kernel/drivers/media/video/videodev.ko
-kernel/drivers/media/video/v4l2-int-device.ko
-kernel/drivers/media/video/v4l2-common.ko
-kernel/drivers/media/video/v4l1-compat.ko
-kernel/drivers/media/video/ir-kbd-i2c.ko
-kernel/drivers/media/video/tegra/ov5640.ko
-kernel/drivers/media/video/tegra/mi1040.ko
-kernel/drivers/media/video/tegra/mi5140.ko
-kernel/drivers/media/video/uvc/uvcvideo.ko
