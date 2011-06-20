@@ -1,0 +1,3 @@
+kernel/drivers/media/video/tegra/ov5640.ko
+kernel/drivers/media/video/tegra/mi1040.ko
+kernel/drivers/media/video/tegra/mi5140.ko

@@ -1,0 +1,1 @@
+cmd_drivers/media/video/tegra/mediaserver/built-in.o :=  arm-linux-androideabi-ld -EL    -r -o drivers/media/video/tegra/mediaserver/built-in.o drivers/media/video/tegra/mediaserver/tegra_mediaserver.o 

@@ -1024,6 +1024,10 @@ static void __init tegra_ventana_init(void)
 	tegra_i2s_device1.dev.platform_data = &tegra_audio_pdata[0];
 	tegra_i2s_device2.dev.platform_data = &tegra_audio_pdata[1];
 	tegra_spdif_device.dev.platform_data = &tegra_spdif_pdata;
+        if (is_tegra_debug_uartport_hs() == true)
+                platform_device_register(&tegra_uartd_device);
+        else
+                platform_device_register(&debug_uart);
 	tegra_das_device.dev.platform_data = &tegra_das_pdata;
 
 	//disable for wifi sku
@@ -1095,7 +1099,7 @@ void __init tegra_ventana_reserve(void)
 	if (memblock_reserve(0x0, 4096) < 0)
 		pr_warn("Cannot reserve first 4K of memory for safety\n");
 
-	tegra_reserve(SZ_256M, SZ_8M, SZ_16M);  // SZ_256
+	tegra_reserve(SZ_256M, SZ_16M, SZ_32M);
 }
 
 MACHINE_START(VENTANA, "ventana")

@@ -394,7 +394,7 @@ static struct nct1008_platform_data ventana_nct1008_pdata = {
 	.hysteresis = 0,
 	.shutdown_ext_limit = 115,
 	.shutdown_local_limit = 120,
-	.throttling_ext_limit = 90,
+	.throttling_ext_limit = 70,
 	.alarm_fn = tegra_throttling_enable,
 };
 

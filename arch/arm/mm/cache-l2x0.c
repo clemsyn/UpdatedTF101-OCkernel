@@ -32,6 +32,9 @@ void callGenericSMC(u32 param0, u32 param1, u32 param2);
 
 static void __iomem *l2x0_base;
 static uint32_t l2x0_way_mask;	/* Bitmask of active ways */
+static uint32_t l2x0_size;
+static uint32_t l2x0_num_ways;
+static uint32_t l2x0_num_idxes;
 bool l2x0_disabled;
 
 static inline void cache_wait_always(void __iomem *reg, unsigned long mask)
@@ -151,11 +154,34 @@ static inline void l2x0_inv_all(void)
 static inline void l2x0_flush_all(void)
 {
 	unsigned long flags;
+#ifdef CONFIG_PL310_ERRATA_727915
+	int way;
+	int idx;
+	unsigned long way_idx;
+	unsigned long rtl_release;
+#endif
 
 	/* flush all ways */
 	_l2x0_lock(&l2x0_lock, flags);
-	writel(0xff, l2x0_base + L2X0_CLEAN_INV_WAY);
-	cache_wait_always(l2x0_base + L2X0_CLEAN_INV_WAY, 0xff);
+#ifdef CONFIG_PL310_ERRATA_727915
+	rtl_release = readl_relaxed(l2x0_base + L2X0_CACHE_ID);
+	rtl_release &= L2X0_CACHE_ID_RTL_RELEASE_MASK;
+	if ( (rtl_release == L2X0_CACHE_ID_RTL_RELEASE_R2P0) ||
+		(rtl_release == L2X0_CACHE_ID_RTL_RELEASE_R3P0) ) {
+		for (idx = 0; idx < l2x0_num_idxes; idx++) {
+			for (way = 0; way < l2x0_num_ways; way++) {
+				way_idx = (way << L2X0_CLEAN_INV_LINE_IDX_WAY_SHIFT) |
+					(idx << L2X0_CLEAN_INV_LINE_IDX_INDEX_SHIFT);
+				cache_wait(l2x0_base + L2X0_CLEAN_INV_LINE_IDX, 1);
+				writel_relaxed(way_idx, l2x0_base + L2X0_CLEAN_INV_LINE_IDX);
+			}
+		}
+	} else
+#endif
+	{
+		writel(0xff, l2x0_base + L2X0_CLEAN_INV_WAY);
+		cache_wait_always(l2x0_base + L2X0_CLEAN_INV_WAY, 0xff);
+	}
 	cache_sync();
 	_l2x0_unlock(&l2x0_lock, flags);
 }
@@ -254,7 +280,7 @@ static void l2x0_flush_range(unsigned long start, unsigned long end)
 void l2x0_shutdown(void)
 {
 	unsigned long flags;
-#ifdef CONFIG_SMP
+#if defined(CONFIG_SMP) && defined(CONFIG_TRUSTED_FOUNDATIONS)
 	long ret;
 	cpumask_t saved_cpu_mask;
 	cpumask_t local_cpu_mask = CPU_MASK_NONE;
@@ -287,7 +313,7 @@ void l2x0_shutdown(void)
 		}
 #else
 #ifdef CONFIG_SMP
-      /* If SMP defined, 
+      /* If SMP defined,
          TF is running on Core #0. So, force execution on Core #0 */
 		cpu_set(0, local_cpu_mask);
 		sched_getaffinity(0, &saved_cpu_mask);
@@ -315,9 +341,10 @@ static void l2x0_enable(__u32 aux_val, __u32 aux_mask)
 {
 	__u32 aux;
 	__u32 cache_id;
+	__u32 way_size = 0;
 	int ways;
 	const char *type;
-#ifdef CONFIG_SMP
+#if defined(CONFIG_SMP) && defined(CONFIG_TRUSTED_FOUNDATIONS)
 	long ret;
 	cpumask_t saved_cpu_mask;
 	cpumask_t local_cpu_mask = CPU_MASK_NONE;
@@ -355,6 +382,16 @@ static void l2x0_enable(__u32 aux_val, __u32 aux_mask)
 	l2x0_way_mask = (1 << ways) - 1;
 
 	/*
+	 * L2 cache Size =  Way size * Number of ways
+	 */
+	way_size = (aux & L2X0_AUX_CTRL_WAY_SIZE_MASK) >> 17;
+	way_size = 1 << (way_size + 3);
+	l2x0_size = ways * way_size * SZ_1K;
+
+	l2x0_num_ways = ways;
+	l2x0_num_idxes = l2x0_size / (ways * CACHE_LINE_SIZE);
+
+	/*
 	 * Check if l2x0 controller is already enabled.
 	 * If you are booting from non-secure mode
 	 * accessing the below registers will fault.
@@ -369,7 +406,7 @@ static void l2x0_enable(__u32 aux_val, __u32 aux_mask)
 
 		/* enable L2X0 */
 		writel_relaxed(1, l2x0_base + L2X0_CTRL);
-      
+
 #else /* CONFIG_TRUSTED_FOUNDATIONS is defined */
 /*
 			ISSUE : Some registers of PL310 controler must be written from Secure context!
@@ -385,7 +422,7 @@ static void l2x0_enable(__u32 aux_val, __u32 aux_mask)
 		/* l2x0 controller is disabled */
 
 #ifdef CONFIG_SMP
-      /* If SMP defined, 
+      /* If SMP defined,
          TF is running on Core #0. So, force execution on Core #0 */
 		cpu_set(0, local_cpu_mask);
 		sched_getaffinity(0, &saved_cpu_mask);

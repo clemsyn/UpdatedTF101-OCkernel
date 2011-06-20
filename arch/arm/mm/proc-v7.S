@@ -275,7 +275,18 @@ __v7_setup:
 	orreq	r10, r10, #1 << 6		@ set bit #6
 	mcreq	p15, 0, r10, c15, c0, 1		@ write diagnostic register
 #endif
-
+#ifdef CONFIG_ARM_ERRATA_751472
+        cmp     r6, #0x30                       @ present prior to r3p0
+        mrclt   p15, 0, r10, c15, c0, 1         @ read diagnostic register
+        orrlt   r10, r10, #1 << 11              @ set bit #11
+        mcrlt   p15, 0, r10, c15, c0, 1         @ write diagnostic register
+#endif
+#ifdef CONFIG_ARM_ERRATA_752520
+        cmp     r6, #0x29                       @ present prior to r2p9
+        mrclt   p15, 0, r10, c15, c0, 1         @ read diagnostic register
+        orrlt   r10, r10, #1 << 20              @ set bit #20
+        mcrlt   p15, 0, r10, c15, c0, 1         @ write diagnostic register
+#endif
 3:	mov	r10, #0
 #ifdef HARVARD_CACHE
 	mcr	p15, 0, r10, c7, c5, 0		@ I+BTB cache invalidate

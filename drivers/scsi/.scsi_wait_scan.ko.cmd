@@ -1,0 +1,1 @@
+cmd_drivers/scsi/scsi_wait_scan.ko := arm-linux-androideabi-ld -EL -r  -T /media/NEW/UpdatedTF101-OCkernel/scripts/module-common.lds --build-id  -o drivers/scsi/scsi_wait_scan.ko drivers/scsi/scsi_wait_scan.o drivers/scsi/scsi_wait_scan.mod.o

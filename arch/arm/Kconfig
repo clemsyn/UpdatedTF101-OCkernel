@@ -1142,6 +1142,36 @@ config ARM_ERRATA_720791
           This workaround disables gating the Core clock when the Instruction
           side is waiting for a Page Table Walk answer or linefill completion.
 
+config ARM_ERRATA_751472
+        bool "ARM errata: Interrupted ICIALLUIS may prevent completion of broadcasted operation"
+        depends on CPU_V7 && SMP
+        help
+          This option enables the workaround for the 751472 Cortex-A9 (prior
+          to r3p0) erratum. An interrupted ICIALLUIS operation may prevent the
+          completion of a following broadcasted operation if the second
+          operation is received by a CPU before the ICIALLUIS has completed,
+          potentially leading to corrupted entries in the cache or TLB.
+
+config ARM_ERRATA_752520
+        bool "ARM errata: Faulty arbitration between PLD and Cacheable TLB requests may create a system deadlock"
+        depends on CPU_V7
+        help
+          Under rare circumstances, PLDs may interfere with a Cacheable page table walk,
+          creating a processor deadlock. The erratum can only happen when the Data Cache
+          and MMU are enabled, with the TLB descriptors marked as L1 cacheable,
+          so that Page Table Walks are performed as cache linefills.
+
+config PL310_ERRATA_727915
+        bool "Background Clean & Invalidate by Way operation can cause data corruption"
+        depends on CACHE_L2X0
+        help
+          PL310 implements the Clean & Invalidate by Way L2 cache maintenance
+          operation (offset 0x7FC). This operation runs in background so that
+          PL310 can handle normal accesses while it is in progress. Under very
+          rare circumstances, due to this erratum, write data can be lost when
+          PL310 treats a cacheable write transaction during a Clean &
+          Invalidate by Way operation.
+
 endmenu
 
 source "arch/arm/common/Kconfig"
