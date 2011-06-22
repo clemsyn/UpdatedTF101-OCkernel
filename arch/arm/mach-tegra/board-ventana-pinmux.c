@@ -30,18 +30,6 @@
 		.slew_falling = TEGRA_SLEW_SLOWEST,		\
 	}
 
-#define RF_REQUEST_DRIVE(_name)					\
-	{							\
-		.pingroup = TEGRA_DRIVE_PINGROUP_##_name,	\
-		.hsm = TEGRA_HSM_DISABLE,			\
-		.schmitt = TEGRA_SCHMITT_DISABLE,		\
-		.drive = TEGRA_DRIVE_DIV_1,			\
-		.pull_down = TEGRA_PULL_31,			\
-		.pull_up = TEGRA_PULL_31,			\
-		.slew_rising = TEGRA_SLEW_SLOWEST,		\
-		.slew_falling = TEGRA_SLEW_SLOWEST,		\
-	}
-
 #define SET_DRIVE(_name, _hsm, _schmitt, _drive, _pulldn_drive, _pullup_drive, _pulldn_slew, _pullup_slew) \
         {                                               \
                 .pingroup = TEGRA_DRIVE_PINGROUP_##_name,   \
@@ -56,16 +44,16 @@
 
 
 static __initdata struct tegra_drive_pingroup_config ventana_drive_pinmux[] = {
-	DEFAULT_DRIVE(DBG),
         DEFAULT_DRIVE(DDC),
 	DEFAULT_DRIVE(VI1),
 	DEFAULT_DRIVE(SDIO1),
-	RF_REQUEST_DRIVE(CSUS),
 
         SET_DRIVE(DBG,          DISABLE, ENABLE, DIV_1, 31, 31, FASTEST, FASTEST),
         SET_DRIVE(VI2,          DISABLE, ENABLE, DIV_1, 31, 31, FASTEST, FASTEST),
         SET_DRIVE(AT1,          DISABLE, ENABLE, DIV_1, 31, 31, FASTEST, FASTEST),
         SET_DRIVE(AO1,          DISABLE, ENABLE, DIV_1, 31, 31, FASTEST, FASTEST),
+        SET_DRIVE(CSUS,         DISABLE, DISABLE, DIV_1, 31, 31, SLOWEST, SLOWEST),
+        
 };
 
 static __initdata struct tegra_pingroup_config ventana_pinmux[] = {

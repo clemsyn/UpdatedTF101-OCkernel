@@ -607,7 +607,6 @@ static int tegra_fb_ioctl(struct fb_info *info, unsigned int cmd, unsigned long 
 			if (i >= modedb.modedb_len)
 				break;
                         memset(&var, 0x0, sizeof(var));
-
 			fb_videomode_to_var(&var, &modelist->mode);
 
 			if (copy_to_user((void __user *)&modedb.modedb[i],

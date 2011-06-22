@@ -1,8 +1,8 @@
-/* This file is auto generated, version 323 */
+/* This file is auto generated, version 334 */
 /* SMP PREEMPT */
 #define UTS_MACHINE "arm"
-#define UTS_VERSION "#323 SMP PREEMPT Mon Jun 20 09:25:21 CDT 2011"
-#define LINUX_COMPILE_TIME "09:25:22"
+#define UTS_VERSION "#334 SMP PREEMPT Tue Jun 21 11:44:25 CDT 2011"
+#define LINUX_COMPILE_TIME "11:44:25"
 #define LINUX_COMPILE_BY "clemsyn"
 #define LINUX_COMPILE_HOST "clemsyn-MM061"
 #define LINUX_COMPILE_DOMAIN "(none)"
